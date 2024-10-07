@@ -5,6 +5,19 @@ import csv
 def extract_information(product_page_url):
     page_product_request = requests.get(product_page_url)
     url_content = BeautifulSoup(page_product_request.content, 'html.parser')
+    match url_content.find_all("p", class_="star-rating")[0].get('class')[1]:
+        case"One":
+            rating = 1
+        case "Two":
+            rating = 2
+        case "Three":
+            rating = 3
+        case "Four":
+            rating = 4
+        case "Five":
+            rating = 5
+        case _:
+            rating = 0
     product_informations = []
     product_information = {}
     product_information["universal_product_code"] = url_content.find(class_="table-striped").find_all("td")[0].string
@@ -14,7 +27,7 @@ def extract_information(product_page_url):
     product_information["number_available"] = url_content.find(class_="table-striped").find_all("td")[5].string.replace("In stock (", "").replace(" available)", "")
     product_information["product_description"] = url_content.find(class_="sub-header").find_next_sibling("p").string
     product_information["category"] = url_content.find(class_="table-striped").find_all("td")[1].string
-    product_information["review_rating"] = url_content.find(class_="table-striped").find_all("td")[6].string
+    product_information["review_rating"] = rating
     product_information["image_url"] = product_page_url + "/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
     product_informations.append(product_information)
     return product_informations
