@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
+product_informations = []
+
 def extract_information(product_page_url):
     page_product_request = requests.get(product_page_url)
     url_content = BeautifulSoup(page_product_request.content, 'html.parser')
@@ -18,7 +20,6 @@ def extract_information(product_page_url):
             rating = 5
         case _:
             rating = 0
-    product_informations = []
     product_information = {}
     product_information["universal_product_code"] = url_content.find(class_="table-striped").find_all("td")[0].string
     product_information["title"] = url_content.find(class_="col-sm-6 product_main").find('h1').string
@@ -29,8 +30,7 @@ def extract_information(product_page_url):
     product_information["category"] = url_content.find(class_="table-striped").find_all("td")[1].string
     product_information["review_rating"] = rating
     product_information["image_url"] = product_page_url + "/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
-    product_informations.append(product_information)
-    return product_informations
+    return product_information
 
 def save_to_csv(data_to_save):
     with open('output.csv', mode='w', newline='') as file:
@@ -49,5 +49,5 @@ def save_to_csv(data_to_save):
             writer.writerow(data)
 
 product_page_url = "https://books.toscrape.com/catalogue/the-project_856/index.html"
-product_information = extract_information(product_page_url)
+product_informations.append(extract_information(product_page_url))
 save_to_csv(product_information)
