@@ -16,5 +16,8 @@ def extract_information(product_page_url):
     product_information["image_url"] = url_content.find(class_="carousel-inner").img['src']
     return product_information
 
+def save_to_csv(product_information):
+    
+
 product_page_url = "https://books.toscrape.com/catalogue/the-project_856/index.html"
 product_information = extract_information(product_page_url)
