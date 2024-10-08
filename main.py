@@ -68,7 +68,13 @@ def extract_categories(site_urls):
     all_a = url_parser.find(class_="side_categories").find_all('a')
     for a in all_a:
         if "books_1" not in a.attrs['href']:
-            list_category.append({"category": a.text.replace("\n", "").replace(" ", ""), "link": "https://books.toscrape.com/" + a.attrs['href']})
+            name_category = ""
+            name_table = a.text.replace("\n", "").split(" ")
+            for name in name_table:
+                if name != "":
+                    name_category += name + " "
+            name_category = name_category[:-1]
+            list_category.append({"category": name_category, "link": "https://books.toscrape.com/" + a.attrs['href']})
     return list_category
 
 def save_to_csv(data_to_save, file_name):
@@ -87,11 +93,21 @@ def save_to_csv(data_to_save, file_name):
         for data in data_to_save:
             writer.writerow(data)
 
-#print(extract_informations(["https://books.toscrape.com/catalogue/alice-in-wonderland-alices-adventures-in-wonderland-1_5/index.html"]))
+def start_extract(site_url):
+    print('Extraction lancée')
+    product_categories_urls = extract_categories(site_url)
+    print(f"{str(len(product_categories_urls))} catégories trouvées")
+    for product_category in product_categories_urls:
+        product_page_urls = extract_urls(product_category['link'])
+        product_informations = extract_informations(product_page_urls)
+        save_to_csv(product_informations, product_category['category'])
+        if len(product_informations) > 1:
+            print(f"Pour la categorie {product_category['category']}, {str(len(product_informations))} livres ont été trouvés et sauvegardés")
+        else:
+            print(f"Pour la categorie {product_category['category']}, {str(len(product_informations))} livre a été trouvé et sauvegardé")
 
-site_url = "https://books.toscrape.com/index.html"
-product_categories_urls = extract_categories(site_url)
-for product_category in product_categories_urls:
-    product_page_urls = extract_urls(product_category['link'])
-    product_informations = extract_informations(product_page_urls)
-    save_to_csv(product_informations, product_category['category'])
+if __name__ == "__main__":
+    site_url = "https://books.toscrape.com/index.html"
+    print(f"Bienvenue sur l'extracteur d'information du site : {site_url}")
+    start_extract(site_url)
+    print("Extraction finie")
