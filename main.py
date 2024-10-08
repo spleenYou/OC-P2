@@ -30,7 +30,10 @@ def extract_informations(product_page_urls):
         product_information["price_including_tax"] = float(url_content.find(class_="table-striped").find_all("td")[3].string.replace("£", ""))
         product_information["price_excluding_tax"] = float(url_content.find(class_="table-striped").find_all("td")[2].string.replace("£", ""))
         product_information["number_available"] = url_content.find(class_="table-striped").find_all("td")[5].string.replace("In stock (", "").replace(" available)", "")
-        product_information["product_description"] = url_content.find(class_="sub-header").find_next_sibling("p").string
+        try:
+            product_information["product_description"] = url_content.find(class_="sub-header").find_next_sibling("p").string
+        except:
+            product_information["product_description"] = ""
         product_information["category"] = url_content.find(class_="table-striped").find_all("td")[1].string
         product_information["review_rating"] = rating
         product_information["image_url"] = product_page_url + "/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
@@ -59,8 +62,17 @@ def extract_urls(urls_to_parse):
             pages_to_parse = False
     return list_urls
 
-def save_to_csv(data_to_save):
-    with open('output.csv', mode='w', newline='', encoding="utf-8") as file:
+def extract_categories(site_urls):
+    list_category = []
+    url_parser = bs_parser(site_url)
+    all_a = url_parser.find(class_="side_categories").find_all('a')
+    for a in all_a:
+        if "books_1" not in a.attrs['href']:
+            list_category.append({"category": a.text.replace("\n", "").replace(" ", ""), "link": "https://books.toscrape.com/" + a.attrs['href']})
+    return list_category
+
+def save_to_csv(data_to_save, file_name):
+    with open("csv/" +file_name + '.csv', mode='w', newline='', encoding="utf-8") as file:
         fieldnames = ['universal_product_code',
                       'title',
                       'price_including_tax',
@@ -75,7 +87,11 @@ def save_to_csv(data_to_save):
         for data in data_to_save:
             writer.writerow(data)
 
-product_category_url = "https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html"
-product_page_urls = extract_urls(product_category_url)
-product_informations = extract_informations(product_page_urls)
-save_to_csv(product_informations)
+#print(extract_informations(["https://books.toscrape.com/catalogue/alice-in-wonderland-alices-adventures-in-wonderland-1_5/index.html"]))
+
+site_url = "https://books.toscrape.com/index.html"
+product_categories_urls = extract_categories(site_url)
+for product_category in product_categories_urls:
+    product_page_urls = extract_urls(product_category['link'])
+    product_informations = extract_informations(product_page_urls)
+    save_to_csv(product_informations, product_category['category'])
