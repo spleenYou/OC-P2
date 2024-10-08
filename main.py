@@ -2,8 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
-def bs_parser(url_to_parser):
-    page_product_request = requests.get(url_to_parser)
+def bs_parser(url_to_parse):
+    page_product_request = requests.get(url_to_parse)
     url_content = BeautifulSoup(page_product_request.content.decode("utf-8"), 'html.parser')
     return url_content
 
@@ -37,11 +37,26 @@ def extract_informations(product_page_urls):
         product_informations.append(product_information)
     return product_informations
 
-def extract_urls(url_category):
-    urls_parser = bs_parser(url_category)
+def extract_urls(urls_to_parse):
     list_urls = []
-    for i in urls_parser.find("ol", class_="row").find_all("h3"):
-        list_urls.append(i.find("a").attrs['href'].replace("../../..", "https://books.toscrape.com/catalogue"))
+    pages_to_parse = True
+    while pages_to_parse:
+        urls_parser = bs_parser(urls_to_parse)
+        for url in urls_parser.find("ol", class_="row").find_all("h3"):
+            list_urls.append(url.find("a").attrs['href'].replace("../../..", "https://books.toscrape.com/catalogue"))
+
+        next_page = urls_parser.find(class_="next")
+        if next_page:
+            url = urls_to_parse.split("/")
+            del url[-1]
+            for part in url:
+                if "http" in part:
+                    urls_to_parse = "https:/"
+                else:
+                    urls_to_parse += part + "/"
+            urls_to_parse += next_page.find("a").attrs["href"]
+        else:
+            pages_to_parse = False
     return list_urls
 
 def save_to_csv(data_to_save):
@@ -60,7 +75,7 @@ def save_to_csv(data_to_save):
         for data in data_to_save:
             writer.writerow(data)
 
-product_category_url = "https://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html"
+product_category_url = "https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html"
 product_page_urls = extract_urls(product_category_url)
 product_informations = extract_informations(product_page_urls)
 save_to_csv(product_informations)
