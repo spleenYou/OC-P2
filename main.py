@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import csv
+import os
 
 def bs_parser(url_to_parse):
     page_product_request = requests.get(url_to_parse)
@@ -36,7 +37,7 @@ def extract_informations(product_page_urls):
             product_information["product_description"] = ""
         product_information["category"] = url_content.find(class_="table-striped").find_all("td")[1].string
         product_information["review_rating"] = rating
-        product_information["image_url"] = product_page_url + "/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
+        product_information["image_url"] = "https://books.toscrape.com/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
         product_informations.append(product_information)
     return product_informations
 
@@ -78,6 +79,8 @@ def extract_categories(site_urls):
     return list_category
 
 def save_to_csv(data_to_save, file_name):
+    if not os.path.exists("csv"):
+        os.makedirs("csv")
     with open("csv/" +file_name + '.csv', mode='w', newline='', encoding="utf-8") as file:
         fieldnames = ['universal_product_code',
                       'title',
@@ -106,8 +109,33 @@ def start_extract(site_url):
         else:
             print(f"Pour la categorie {product_category['category']}, {str(len(product_informations))} livre a été trouvé et sauvegardé")
 
+def download_images():
+    if not os.path.exists("images"):
+        os.mkdir("images")
+    files_category = os.listdir("csv")
+    for file_category in files_category:
+        path = f"images/{file_category[:-4]}"
+        if not os.path.exists(path):
+            os.mkdir(path)
+        with open(f"csv/{file_category}", 'r', encoding="utf-8") as file:
+            books = csv.DictReader(file)
+            image_count = 0
+            for book in books:
+                get_image = requests.get(book["image_url"]).content
+                with open (f"{path}/{book['universal_product_code']}.{book['image_url'][-3:]}", 'wb') as image:
+                    image_count += 1
+                    image.write(get_image)
+        if image_count == 1:
+            print(f"Pour la catégorie {file_category[:-4]}, {image_count} image a été téléchargée")
+        else:
+            print(f"Pour la catégorie {file_category[:-4]}, {image_count} images ont été téléchargées")
+
+
 if __name__ == "__main__":
     site_url = "https://books.toscrape.com/index.html"
     print(f"Bienvenue sur l'extracteur d'information du site : {site_url}")
     start_extract(site_url)
     print("Extraction finie")
+    print("Démarrage du téléchargement des photos")
+    download_images()
+    print("Fin du téléchargement des photos")
