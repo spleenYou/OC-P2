@@ -1,4 +1,6 @@
 # Projet 2 : Analyse de marché
+  
+<img src="readme.png"></img>
 
 ## Introduction
 
