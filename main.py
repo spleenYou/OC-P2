@@ -38,8 +38,8 @@ def extract_informations(product_page_urls):
         product_information = {}
         product_information["universal_product_code"] = url_content.find(class_="table-striped").find_all("td")[0].string
         product_information["title"] = url_content.find(class_="col-sm-6 product_main").find('h1').string
-        product_information["price_including_tax"] = float(url_content.find(class_="table-striped").find_all("td")[3].string.replace("£", ""))
-        product_information["price_excluding_tax"] = float(url_content.find(class_="table-striped").find_all("td")[2].string.replace("£", ""))
+        product_information["price_including_tax"] = url_content.find(class_="table-striped").find_all("td")[3].string.replace("£", "")
+        product_information["price_excluding_tax"] = url_content.find(class_="table-striped").find_all("td")[2].string.replace("£", "")
         product_information["number_available"] = url_content.find(class_="table-striped").find_all("td")[5].string.replace("In stock (", "").replace(" available)", "")
         # Test pour le cas ou certains livres n'auraient pas de description
         try:
