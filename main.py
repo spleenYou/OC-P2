@@ -12,9 +12,9 @@ def bs_parser(url_to_parse):
     url_content = BeautifulSoup(page_product_request.content.decode("utf-8"), 'html.parser')
     return url_content
 
-def extract_informations(product_page_urls):
+def transform_informations(product_page_urls):
     '''
-    Extraction des informations d'un livre
+    Transformation des informations d'un livre
     '''
 
     product_informations = []
@@ -142,7 +142,7 @@ def start_extract(site_url):
         # Pour chaque catégorie, recherche les adresses des livres
         product_page_urls = extract_urls(product_category['link'])
         # Extraction des informations de chaque livres de la catégorie
-        product_informations = extract_informations(product_page_urls)
+        product_informations = transform_informations(product_page_urls)
         # Enregistrement dans un fichier csv
         save_to_csv(product_informations, product_category['category'])
         # Adaptation du texte selon le nombre de livre(s) trouvé(s)
