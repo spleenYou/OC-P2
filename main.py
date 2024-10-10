@@ -185,11 +185,10 @@ def download_images():
         else:
             print(f"Pour la catégorie {file_category[:-4]}, {image_count} images ont été téléchargées")
 
-if __name__ == "__main__":
-    site_url = "https://books.toscrape.com/index.html"
-    print(f"Bienvenue sur l'extracteur d'informations du site : {site_url}")
-    start_extract(site_url)
-    print("Extraction finie")
-    print("Démarrage du téléchargement des photos")
-    download_images()
-    print("Fin du téléchargement des photos")
+site_url = "https://books.toscrape.com/index.html"
+print(f"Bienvenue sur l'extracteur d'informations du site : {site_url}")
+start_extract(site_url)
+print("Extraction finie")
+print("Démarrage du téléchargement des photos")
+download_images()
+print("Fin du téléchargement des photos")
