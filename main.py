@@ -54,7 +54,7 @@ def extract_informations(product_page_urls):
 
 def extract_urls(urls_to_parse):
     '''
-    Recherche sur les pages d'une categorie des différents livres
+    Liste les urls des livres de la catégorie
     '''
 
     list_urls = []
@@ -152,7 +152,9 @@ def start_extract(site_url):
             print(f"Pour la categorie {product_category['category']}, {str(len(product_informations))} livre a été trouvé et sauvegardé")
 
 def download_images():
-    # Telechargement des images des livres
+    '''
+    Téléchargement des images des livres
+    '''
 
     # Si le dossier "images" n'existe pas, il est créé
     if not os.path.exists("images"):
@@ -185,7 +187,7 @@ def download_images():
 
 if __name__ == "__main__":
     site_url = "https://books.toscrape.com/index.html"
-    print(f"Bienvenue sur l'extracteur d'information du site : {site_url}")
+    print(f"Bienvenue sur l'extracteur d'informations du site : {site_url}")
     start_extract(site_url)
     print("Extraction finie")
     print("Démarrage du téléchargement des photos")
