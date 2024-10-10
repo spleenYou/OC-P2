@@ -12,16 +12,15 @@ def bs_parser(url_to_parse):
     url_content = BeautifulSoup(page_product_request.content.decode("utf-8"), 'html.parser')
     return url_content
 
-def transform_informations(product_page_urls):
+def transform_informations(product_page_urls_parser):
     '''
     Transformation des informations d'un livre
     '''
 
     product_informations = []
-    for product_page_url in product_page_urls:
-        url_content = bs_parser(product_page_url)
+    for product_page_url_parser in product_page_urls_parser:
         # Recherche du contenu de la classe, elle contient la note
-        match url_content.find_all("p", class_="star-rating")[0].get('class')[1]:
+        match product_page_url_parser.find_all("p", class_="star-rating")[0].get('class')[1]:
             case"One":
                 rating = 1
             case "Two":
@@ -36,23 +35,23 @@ def transform_informations(product_page_urls):
                 rating = 0
         # Mise en dictionnaire des informations
         product_information = {}
-        product_information["universal_product_code"] = url_content.find(class_="table-striped").find_all("td")[0].string
-        product_information["title"] = url_content.find(class_="col-sm-6 product_main").find('h1').string
-        product_information["price_including_tax"] = url_content.find(class_="table-striped").find_all("td")[3].string.replace("£", "")
-        product_information["price_excluding_tax"] = url_content.find(class_="table-striped").find_all("td")[2].string.replace("£", "")
-        product_information["number_available"] = url_content.find(class_="table-striped").find_all("td")[5].string.replace("In stock (", "").replace(" available)", "")
+        product_information["universal_product_code"] = product_page_url_parser.find(class_="table-striped").find_all("td")[0].string
+        product_information["title"] = product_page_url_parser.find(class_="col-sm-6 product_main").find('h1').string
+        product_information["price_including_tax"] = product_page_url_parser.find(class_="table-striped").find_all("td")[3].string.replace("£", "")
+        product_information["price_excluding_tax"] = product_page_url_parser.find(class_="table-striped").find_all("td")[2].string.replace("£", "")
+        product_information["number_available"] = product_page_url_parser.find(class_="table-striped").find_all("td")[5].string.replace("In stock (", "").replace(" available)", "")
         # Test pour le cas ou certains livres n'auraient pas de description
         try:
-            product_information["product_description"] = url_content.find(class_="sub-header").find_next_sibling("p").string
+            product_information["product_description"] = product_page_url_parser.find(class_="sub-header").find_next_sibling("p").string
         except:
             product_information["product_description"] = ""
-        product_information["category"] = url_content.find(class_="table-striped").find_all("td")[1].string
+        product_information["category"] = product_page_url_parser.find(class_="table-striped").find_all("td")[1].string
         product_information["review_rating"] = rating
-        product_information["image_url"] = "https://books.toscrape.com/" + url_content.find(class_="carousel-inner").img['src'].replace("../../", "")
+        product_information["image_url"] = "https://books.toscrape.com/" + product_page_url_parser.find(class_="carousel-inner").img['src'].replace("../../", "")
         product_informations.append(product_information)
     return product_informations
 
-def extract_urls(urls_to_parse):
+def extract_urls(url_to_extract):
     '''
     Liste les urls des livres de la catégorie
     '''
@@ -61,7 +60,7 @@ def extract_urls(urls_to_parse):
     pages_to_parse = True
     # Répétition de l'extraction tant qu'un lien "next" est trouvé
     while pages_to_parse:
-        urls_parser = bs_parser(urls_to_parse)
+        urls_parser = bs_parser(url_to_extract)
         # Extraction des livres présents sur la page
         for url in urls_parser.find("ol", class_="row").find_all("h3"):
             list_urls.append(url.find("a").attrs['href'].replace("../../..", "https://books.toscrape.com/catalogue"))
@@ -69,21 +68,24 @@ def extract_urls(urls_to_parse):
         next_page = urls_parser.find(class_="next")
         if next_page:
             # Suppression de la fin de l'url
-            url = urls_to_parse.split("/")
+            url = url_to_extract.split("/")
             del url[-1]
             for part in url:
                 if "http" in part:
-                    urls_to_parse = "https:/"
+                    url_to_extract = "https:/"
                 else:
-                    urls_to_parse += part + "/"
+                    url_to_extract += part + "/"
             # Rajout de l'adresse du lien "next" pour avoir la prochaine url a parser
-            urls_to_parse += next_page.find("a").attrs["href"]
+            url_to_extract += next_page.find("a").attrs["href"]
         else:
             # Si pas de lien "next" on arrête la boucle
             pages_to_parse = False
-    return list_urls
+    urls_parser = []
+    for url in list_urls:
+        urls_parser.append(bs_parser(url))
+    return urls_parser
 
-def extract_categories(site_urls):
+def extract_categories(site_url):
     '''
     Extraction des catégories
     '''
@@ -129,9 +131,9 @@ def save_to_csv(data_to_save, file_name):
         for data in data_to_save:
             writer.writerow(data)
 
-def start_extract(site_url):
+def start(site_url):
     '''
-    Démarrage de l'extraction des catégories puis des livres
+    Démarrage du process
     '''
 
     print('Extraction lancée')
@@ -187,8 +189,8 @@ def download_images():
 
 site_url = "https://books.toscrape.com/index.html"
 print(f"Bienvenue sur l'extracteur d'informations du site : {site_url}")
-start_extract(site_url)
-print("Extraction finie")
+start(site_url)
+print("Extraction, Transformation et chargement finisbs_parser")
 print("Démarrage du téléchargement des photos")
 download_images()
 print("Fin du téléchargement des photos")
