@@ -3,13 +3,16 @@ import requests
 import csv
 import os
 
-def bs_parser(url_to_parse):
+def requests_content(url_to_request):
+    page_request = requests.get(url_to_request)
+    page_content = page_request.content
+    return page_content
+
+def page_parser(page_to_parse):
     '''
     Parser d'url
     '''
-    
-    page_product_request = requests.get(url_to_parse)
-    url_content = BeautifulSoup(page_product_request.content.decode("utf-8"), 'html.parser')
+    url_content = BeautifulSoup(page_to_parse.decode("utf-8"), 'html.parser')
     return url_content
 
 def transform_informations(product_page_urls_parser):
@@ -60,12 +63,13 @@ def extract_urls(url_to_extract):
     pages_to_parse = True
     # Répétition de l'extraction tant qu'un lien "next" est trouvé
     while pages_to_parse:
-        urls_parser = bs_parser(url_to_extract)
+        content = requests_content(url_to_extract)
+        url_parser = page_parser(content)
         # Extraction des livres présents sur la page
-        for url in urls_parser.find("ol", class_="row").find_all("h3"):
+        for url in url_parser.find("ol", class_="row").find_all("h3"):
             list_urls.append(url.find("a").attrs['href'].replace("../../..", "https://books.toscrape.com/catalogue"))
         # Recherche si un lien "next" est présent
-        next_page = urls_parser.find(class_="next")
+        next_page = url_parser.find(class_="next")
         if next_page:
             # Suppression de la fin de l'url
             url = url_to_extract.split("/")
@@ -82,7 +86,7 @@ def extract_urls(url_to_extract):
             pages_to_parse = False
     urls_parser = []
     for url in list_urls:
-        urls_parser.append(bs_parser(url))
+        urls_parser.append(page_parser(requests_content(url)))
     return urls_parser
 
 def extract_categories(site_url):
@@ -91,8 +95,9 @@ def extract_categories(site_url):
     '''
     list_category = []
     # Analyse de l'adresse
-    url_parser = bs_parser(site_url)
-    all_a = url_parser.find(class_="side_categories").find_all('a')
+    url_content = requests_content(site_url)
+    content = page_parser(url_content)
+    all_a = content.find(class_="side_categories").find_all('a')
     # Recherche des catégories
     for a in all_a:
         if "books_1" not in a.attrs['href']:
@@ -131,7 +136,7 @@ def save_to_csv(data_to_save, file_name):
         for data in data_to_save:
             writer.writerow(data)
 
-def start(site_url):
+def start_ETL(site_url):
     '''
     Démarrage du process
     '''
@@ -176,7 +181,7 @@ def download_images():
             image_count = 0
             for book in books:
                 # Récupération de l'image en ligne
-                get_image = requests.get(book["image_url"]).content
+                get_image = requests_content(book["image_url"])
                 # Ecriture de l'image
                 with open (f"{path}/{book['universal_product_code']}.{book['image_url'][-3:]}", 'wb') as image:
                     image_count += 1
@@ -189,8 +194,8 @@ def download_images():
 
 site_url = "https://books.toscrape.com/index.html"
 print(f"Bienvenue sur l'extracteur d'informations du site : {site_url}")
-start(site_url)
-print("Extraction, Transformation et chargement finisbs_parser")
+start_ETL(site_url)
+print("Extraction, Transformation et chargement finis")
 print("Démarrage du téléchargement des photos")
 download_images()
 print("Fin du téléchargement des photos")
