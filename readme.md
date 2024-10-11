@@ -17,20 +17,44 @@ Cette application a pour but d'aller collecter des informations sur les livres p
 
 ### Environnement virtuel
 
+Dans le dossier du projet, taper les commandes suivantes dans une fenêtre powershell
+
 #### Création
 
+Création de l'environnement virtuel
+
+Remplacer :  
+- \<version> par la version de votre python
+- <nom_de_l_environnement_virtuel> par le nom souhaité
+
+```
+python<version> -m venv <nom_de_l_environnement_virtuel>
+```
 
 #### Activation
 
+Activation de l'environnement virtuel
+
+```
+<nom_de_l_environnement_virtuel>/Scripts/activate
+```
+
 #### Packages
 
-'''
+Installation des packages nécessaires pour le fonctionnement du script
+
+```
 pip install -r .\requirements.txt
-'''
+```
 
 ## Utilisation
 
 Lancer le script et patienter 😁
+
+Remplacer \<version> par la version de votre python
+```
+python<version> main.py
+```
 
 ## Etape du script
 
