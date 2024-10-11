@@ -38,7 +38,7 @@ def extract_urls(url_to_extract):
 
     Parameters
     ----------
-    url_to_extract: str: lien de la catégorie à parcourir
+    url_to_extract : lien de la catégorie à parcourir
 
     Returns
     -------
@@ -79,7 +79,7 @@ def extract_categories(site_url):
     '''
     Extraction des catégories
 
-    Paramaters
+    Parameters
     ----------
     site_url : adresse du site
 
@@ -105,22 +105,3 @@ def extract_categories(site_url):
             name_category = name_category[:-1]
             list_category.append({"category": name_category, "link": "https://books.toscrape.com/" + a.attrs['href']})
     return list_category
-
-def extract_image():
-    # Répertoire pour les images de la categorie en cours
-    path_image = f"images/{file_category[:-4]}"
-    # Si le dossier n'existe pas, il est créé
-    if not os.path.exists(path_image):
-        os.mkdir(path_image)
-    # Lecture du fichier csv pour récupération des urls des images
-    with open(f"csv/{file_category}", 'r', encoding="utf-8") as file:
-        books = csv.DictReader(file)
-        # Nombre d'image(s) créé(es)
-        image_count = 0
-        for book in books:
-            # Récupération de l'image en ligne
-            image_content = extract.requests_content(book["image_url"])
-            # Ecriture de l'image
-            save.save_image(path, book, image_content)
-            #Compte des images
-            image_count += 1
