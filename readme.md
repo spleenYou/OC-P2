@@ -15,9 +15,18 @@ Cette application a pour but d'aller collecter des informations sur les livres p
 - csv
 - os
 
-### Installation de l'environnement virtuel
+### Environnement virtuel
 
+#### Création
+
+
+#### Activation
+
+#### Packages
+
+'''
 pip install -r .\requirements.txt
+'''
 
 ## Utilisation
 
