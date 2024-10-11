@@ -15,18 +15,9 @@ Cette application a pour but d'aller collecter des informations sur les livres p
 - csv
 - os
 
-### Installation
+### Installation de l'environnement virtuel
 
-- BeautifulSoup4
-
-```
-pip install beautifulsoup4
-```
-- Requests
-
-```
-pip install requests
-```
+pip install -r .\requirements.txt
 
 ## Utilisation
 
