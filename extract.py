@@ -72,7 +72,7 @@ def extract_urls(url_to_extract):
             pages_to_parse = False
     urls_parser = []
     for url in list_urls:
-        urls_parser.append(page_parser(requests_content(url)))
+        urls_parser.append({'product_page_url': url, 'url_parse' : page_parser(requests_content(url))})
     return urls_parser
 
 def extract_categories(site_url):
