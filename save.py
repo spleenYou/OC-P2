@@ -21,7 +21,7 @@ def save_to_csv(data_to_save, file_name, fieldnames, path_csv):
     if not os.path.exists(path_csv):
         os.makedirs(path_csv)
     # Ecriture du fichier csv
-    with open(path_csv +file_name + '.csv', mode='w', newline='', encoding="utf-8") as file:
+    with open(path_csv + file_name + '.csv', mode='w', newline='', encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         for data in data_to_save:
