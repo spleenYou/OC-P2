@@ -4,9 +4,11 @@
 
 ## Introduction
 
-Cette application a pour but d'aller collecter des informations sur les livres présents sur le site [Books To Scrape](https://books.toscrape.com/index.html)  
+Cette application a pour but d'aller collecter des informations sur les livres présents sur le site [Books To Scrape](https://books.toscrape.com/index.html)
 
 ## Getting started
+
+Script fonctionnant avec la version 3.12.5 de python
 
 ### Packages utilisés
 
@@ -16,8 +18,6 @@ Cette application a pour but d'aller collecter des informations sur les livres p
 - os
 
 ### Environnement virtuel
-
-Dans le dossier du projet, taper les commandes suivantes dans une fenêtre powershell
 
 #### Création
 
@@ -35,8 +35,15 @@ python<version> -m venv <nom_de_l_environnement_virtuel>
 
 Activation de l'environnement virtuel
 
+Pour Windows
 ```
 <nom_de_l_environnement_virtuel>/Scripts/activate
+```
+
+Pour Unix/macOs
+
+```
+source .<nom_de_l_environnement_virtuel>/bin/activate
 ```
 
 #### Packages
