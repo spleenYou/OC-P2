@@ -71,4 +71,6 @@ for product_category in product_categories_urls:
         print(f"{image_count} images ont été téléchargées")
     print(f"Répertoire des photos images/{product_category["category"]}/")
     print("Extraction terminée pour cette catégorie")
+    if categories_save == 2:
+        break
 print("Travail terminé")

@@ -66,7 +66,7 @@ python<version> main.py
 ## Etape du script
 
 1. Scruter le site internet à la recherche des différentes catégories de livres
-2. Pour chaque catégorie, aller chercher les différentes informations demandées et les enrtegsitrées dans un dossier "csv" dans un fichier .csv par catégorie
+2. Pour chaque catégorie, aller chercher les différentes informations demandées et les enregistrées dans un dossier "csv" dans un fichier .csv par catégorie
 3. Téléchargement des couvertures de chaque livres dans un dossier "/images/*nom_de_la_categorie/*"
 
 ## Informations collectées
